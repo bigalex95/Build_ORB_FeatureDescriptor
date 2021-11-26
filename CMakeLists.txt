@@ -24,13 +24,26 @@ endif()
 
 find_package(OpenCV 3.0 QUIET)
 if(NOT OpenCV_FOUND)
-   find_package(OpenCV 2.4.3 QUIET)
+   find_package(OpenCV 4.5.3 QUIET)
    if(NOT OpenCV_FOUND)
-      message(FATAL_ERROR "OpenCV > 2.4.3 not found.")
+      message(FATAL_ERROR "OpenCV > 4.5.3 not found.")
    endif()
 endif()
 
-Add_executable(compute_Angle computeORB.cpp)
+
+include_directories(fast)
+Add_executable(compute_Angle
+               computeORB.cpp
+               orb.cpp
+               # orb.hpp 
+               # fast/fast.hpp
+               fast/fast.cpp
+               fast/fast_9.cpp
+               fast/fast_10.cpp
+               fast/fast_11.cpp
+               fast/fast_12.cpp
+               fast/nonmax.cpp
+               )
 
 target_link_libraries( compute_Angle
 ${OpenCV_LIBS}
