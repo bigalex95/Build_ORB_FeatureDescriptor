@@ -4,7 +4,7 @@
 #include "iostream"
 #include <opencv2/highgui/highgui.hpp>
 
-string first_file = "../img.png";
+string first_file = "../1.png";
 // string second_file = "../3.png";
 
 int main(int argc, char **argv)
@@ -12,7 +12,7 @@ int main(int argc, char **argv)
 
   // 载入图片
   cv::Mat first_image = cv::imread(first_file, 0); //使用灰度图
-  // cv::resize(second_image, second_image, cv::Size(first_image.cols, first_image.rows), 0, 0);
+  cv::resize(first_image, first_image, cv::Size(first_image.cols, first_image.rows), 0, 0);
 
   std::cout << first_image.rows << "===" << first_image.cols << endl;
 
@@ -62,12 +62,18 @@ int main(int argc, char **argv)
 
   // create a window to display the images from the webcam
   // cv::namedWindow("Webcam", cv::WindowFlags::WINDOW_AUTOSIZE);
-  // cv::namedWindow("matches", cv::WindowFlags::WINDOW_AUTOSIZE);
+  cv::namedWindow("matches", cv::WindowFlags::WINDOW_AUTOSIZE);
 
   // this will contain the image from the webcam
   cv::Mat frame;
   cv::Mat second_image;
   cv::Mat image_show;
+
+  vector<DMatch> matches;
+  vector<cv::DMatch> tmpMatches;
+  vector<cv::KeyPoint> keypoints2;
+  vector<KeyPoint> corners2;
+  vector<DescType> descriptors2;
 
   // display the frame until you press a key
   while (1)
@@ -79,7 +85,6 @@ int main(int argc, char **argv)
     cv::cvtColor(frame, second_image, cv::COLOR_BGR2GRAY);
 
     // 用描述子进行匹配
-    vector<cv::KeyPoint> keypoints2;
     cv::FAST(second_image, keypoints2, 40);
     // cout << "keypoints2: " << keypoints2.size() << endl;
 
@@ -92,16 +97,15 @@ int main(int argc, char **argv)
     // flat.data is your array pointer
     auto *arr2 = flat2.data;
 
-    vector<KeyPoint> corners2;
     int num_corners2;
     auto bytes_per_row2 = second_image.cols * sizeof(uchar);
     auto threshold2 = 40;
-    vector<DescType> descriptors2;
-    vector<DMatch> matches;
 
     auto start = std::chrono::system_clock::now();
     corners2 = fast9_detect_nonmax(arr2, second_image.cols, second_image.rows, bytes_per_row2, threshold2, &num_corners2);
-    // cout << "corners2: " << corners2.size() << "--" << num_corners2 << endl;
+
+    cout << "corners: " << corners.size() << "--" << num_corners << endl;
+    cout << "corners2: " << corners2.size() << "--" << num_corners2 << endl;
 
     // 计算每个关键点的角度
     computeAngle(arr2, second_image.cols, second_image.rows, bytes_per_row2, corners2);
@@ -116,39 +120,49 @@ int main(int argc, char **argv)
     std::chrono::duration<double> elapsed_seconds2 = end - start;
     std::cout << "elapsed time: " << elapsed_seconds2.count() << endl;
 
-    // // convert to opencv variable formats for drawing
-    // if (corners.size() > 0)
-    // {
-    //   for (int tmpi = 0; tmpi < keypoints2.size(); tmpi++)
-    //   {
-    //     keypoints2[tmpi].pt.x = corners2[tmpi].x;
-    //     keypoints2[tmpi].pt.y = corners2[tmpi].y;
-    //     keypoints2[tmpi].angle = corners2[tmpi].angle;
-    //   }
-    // }
+    // convert to opencv variable formats for drawing
+    if (corners2.size() > 0)
+    {
+      for (int tmpi = 0; tmpi < keypoints2.size(); tmpi++)
+      {
+        keypoints2[tmpi].pt.x = corners2[tmpi].x;
+        keypoints2[tmpi].pt.y = corners2[tmpi].y;
+        keypoints2[tmpi].angle = corners2[tmpi].angle;
+      }
+    }
 
-    // vector<cv::DMatch> tmpMatches;
-    // if (matches.size() > 0)
-    // {
-    //   for (auto tmp : matches)
-    //   {
-    //     cv::DMatch temp_match;
-    //     temp_match.queryIdx = tmp.queryIdx;
-    //     temp_match.trainIdx = tmp.trainIdx;
-    //     temp_match.distance = tmp.distance;
-    //     temp_match.imgIdx = tmp.imgIdx;
-    //     tmpMatches.push_back(temp_match);
-    //   }
-    // }
+    if (matches.size() > 0)
+    {
+      for (auto tmp : matches)
+      {
+        cv::DMatch temp_match;
+        temp_match.queryIdx = tmp.queryIdx;
+        temp_match.trainIdx = tmp.trainIdx;
+        temp_match.distance = tmp.distance;
+        temp_match.imgIdx = tmp.imgIdx;
+        tmpMatches.push_back(temp_match);
+      }
+    }
 
-    // tmpMatches = vector<cv::DMatch>();
-    // matches = vector<DMatch>();
-    // keypoints = vector<cv::KeyPoint>();
-    // keypoints2 = vector<cv::KeyPoint>();
+    cv::drawMatches(first_image, keypoints, second_image, keypoints2, tmpMatches, image_show);
+    cv::imshow("matches", image_show);
 
     // wait (1ms) for a key to be pressed
-    // if (cv::waitKey(1) >= 0)
-    //   break;
+    if (cv::waitKey(1) >= 0)
+    {
+      break;
+    }
+
+    tmpMatches.clear();
+    tmpMatches.shrink_to_fit();
+    matches.clear();
+    matches.shrink_to_fit();
+    keypoints2.clear();
+    keypoints2.shrink_to_fit();
+    corners2.clear();
+    corners2.shrink_to_fit();
+    descriptors2.clear();
+    descriptors2.shrink_to_fit();
   }
 
   cout << "done." << endl;

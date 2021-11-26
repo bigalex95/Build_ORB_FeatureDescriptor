@@ -2,8 +2,8 @@
 #include "fast/fast.hpp"
 #include "orb.hpp"
 
-string first_file = "../img.png";
-string second_file = "../img2.png";
+string first_file = "../1.png";
+string second_file = "../3.png";
 
 int main(int argc, char **argv)
 {
@@ -11,6 +11,9 @@ int main(int argc, char **argv)
   // 载入图片
   cv::Mat first_image = cv::imread(first_file, 0); //使用灰度图
   cv::Mat second_image = cv::imread(second_file, 0);
+  // cv::Mat src = second_image.clone();
+  // cv::GaussianBlur(src, second_image, cv::Size(3, 3), 0);
+  // cv::flip(second_image, second_image, 1);
   // cv::resize(second_image, second_image, cv::Size(first_image.cols, first_image.rows), 0, 0);
 
   std::cout << first_image.rows << "===" << first_image.cols << endl;

@@ -14,7 +14,8 @@ vector<KeyPoint> fast9_detect_nonmax(const byte *im, int cols, int rows, int byt
 	scores = fast9_score(im, bytes_per_row, corners, num_corners, b);
 	nonmax = nonmax_suppression(corners, scores, num_corners, ret_num_corners);
 
-	corners = vector<KeyPoint>();
+	corners.clear();
+	corners.shrink_to_fit();
 	free(scores);
 
 	return nonmax;
@@ -31,7 +32,8 @@ vector<KeyPoint> fast10_detect_nonmax(const byte *im, int cols, int rows, int by
 	scores = fast10_score(im, bytes_per_row, corners, num_corners, b);
 	nonmax = nonmax_suppression(corners, scores, num_corners, ret_num_corners);
 
-	corners = vector<KeyPoint>();
+	corners.clear();
+	corners.shrink_to_fit();
 	free(scores);
 
 	return nonmax;
@@ -48,7 +50,8 @@ vector<KeyPoint> fast11_detect_nonmax(const byte *im, int cols, int rows, int by
 	scores = fast11_score(im, bytes_per_row, corners, num_corners, b);
 	nonmax = nonmax_suppression(corners, scores, num_corners, ret_num_corners);
 
-	corners = vector<KeyPoint>();
+	corners.clear();
+	corners.shrink_to_fit();
 	free(scores);
 
 	return nonmax;
@@ -65,7 +68,8 @@ vector<KeyPoint> fast12_detect_nonmax(const byte *im, int cols, int rows, int by
 	scores = fast12_score(im, bytes_per_row, corners, num_corners, b);
 	nonmax = nonmax_suppression(corners, scores, num_corners, ret_num_corners);
 
-	corners = vector<KeyPoint>();
+	corners.clear();
+	corners.shrink_to_fit();
 	free(scores);
 
 	return nonmax;
