@@ -2,8 +2,8 @@
 #include "fast/fast.hpp"
 #include "orb.hpp"
 
-string first_file = "../1.png";
-string second_file = "../3.png";
+string first_file = "../img.png";
+string second_file = "../img2.png";
 
 int main(int argc, char **argv)
 {
